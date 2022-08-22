@@ -1,0 +1,23 @@
+.recorder {
+  background-color: #0f0e12;
+  color: rgb(236, 223, 223);
+  border-radius: 2px;
+  display: inline-flex;
+  gap: 10px;
+  flex-direction: column;
+  padding: 10px;
+
+  .current-time {
+    font-weight: 700;
+
+    &.red {
+      color: rgb(179, 47, 47);
+    }
+  }
+
+  .buttons-container {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+}

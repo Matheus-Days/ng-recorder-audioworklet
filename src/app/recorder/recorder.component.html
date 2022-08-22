@@ -1,0 +1,11 @@
+<div class="recorder">
+  <div class="status">Gravador</div>
+  <span class="current-time" [class.red]="recorderStatus === 'RECORDING'">{{currentTime}}</span>
+  <div class="buttons-container">
+    <button *ngIf="recorderStatus === 'IDLE'" (click)="startRecording()">Gravar</button>
+    <button *ngIf="recorderStatus === 'PAUSED'" (click)="resumeRecording()">Retomar</button>
+    <button *ngIf="recorderStatus === 'RECORDING'" (click)="pauseRecording()">Pausar</button>
+    <button *ngIf="recorderStatus === 'RECORDING'" (click)="stopRecording()">Encerrar</button>
+    <button *ngIf="recorderStatus === 'STOPPED'" (click)="clearRecording()">Limpar</button>
+  </div>
+</div>
