@@ -12,13 +12,6 @@ type Mp3EncoderConfig = {
   dataBuffer?: Int8Array[];
 }
 
-export type Mp3Object = {
-  id: number;
-  blob: Blob;
-  url: string;
-  duration?: string;
-}
-
 export class Mp3Encoder {
   bitRate: number;
   sampleRate: number;
@@ -45,16 +38,9 @@ export class Mp3Encoder {
     }
   }
 
-  finish(): Mp3Object {
+  finish(): Int8Array[] {
     this.dataBuffer.push(this.encoder.flush());
-    const blob = new Blob(this.dataBuffer, { type: "audio/mp3" });
-    this.dataBuffer = [];
-
-    return {
-      id: Date.now(),
-      blob: blob,
-      url: URL.createObjectURL(blob),
-    };
+    return this.dataBuffer;
   }
 
   _floatTo16BitPCM(input: Float32Array, output: Int16Array) {

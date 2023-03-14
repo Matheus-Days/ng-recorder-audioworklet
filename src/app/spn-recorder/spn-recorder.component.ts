@@ -1,27 +1,27 @@
-import { ChangeDetectorRef, Component, OnInit } from "@angular/core";
+import { ChangeDetectorRef, Component, Input, OnInit } from "@angular/core";
 import { distinctUntilChanged, map } from 'rxjs';
-import { AudioRecorderService, RecorderStatus } from "./audio-recorder.service";
+import { SPNAudioRecorderService, RecorderStatus } from "./spn-audio-recorder.service";
 
 
 @Component({
-  selector: 'recorder',
-  templateUrl: './recorder.component.html',
-  styleUrls: ['./recorder.component.scss']
+  selector: 'spn-recorder',
+  templateUrl: './spn-recorder.component.html',
+  styleUrls: ['./spn-recorder.component.scss']
 })
-export class RecorderComponent implements OnInit {
+export class SPNRecorderComponent implements OnInit {
 
   recorderStatus: RecorderStatus = 'IDLE';
   currentTimeSeconds: number = 0;
   currentTime: string = '00:00';
 
-  constructor(private recorder: AudioRecorderService, private changeDetectorRef: ChangeDetectorRef) { }
+  constructor(private recorder: SPNAudioRecorderService, private changeDetectorRef: ChangeDetectorRef) { }
   
   ngOnInit(): void {
     this.recorder.recorderStatus$.subscribe(status => this.recorderStatus = status);
   
     this.recorder.currentTime$
       .pipe(
-        map(seconds => RecorderComponent.formatTime(seconds)),
+        map(seconds => SPNRecorderComponent.formatTime(seconds)),
         distinctUntilChanged()
       ).subscribe(time => {
         this.currentTime = time;
@@ -47,6 +47,18 @@ export class RecorderComponent implements OnInit {
 
   clearRecording() {
     this.recorder.clear();
+  }
+
+  get recorderHeading(): string {
+    switch(this.recorderStatus) {
+      case 'INITIALIZING': return 'Starting...';
+      case 'PAUSED': return 'Paused';
+      case 'PAUSING': return 'Pausing...';
+      case 'RECORDING': return 'Recording...';
+      case 'STOPPED': return 'Stopped';
+      case 'STOPPING': return 'Stopping...';
+      default: return 'ScriptProcessorNode Recorder';
+    }
   }
 
   static formatTime(seconds: number): string {

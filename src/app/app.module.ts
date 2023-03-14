@@ -2,7 +2,8 @@ import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 
 import { AppComponent } from './app.component';
-import { RecorderModule } from './recorder/recorder.module';
+import { AWRecorderModule } from './aw-recorder/aw-recorder.module';
+// import { SPNRecorderModule } from './spn-recorder/spn-recorder.module';
 
 @NgModule({
   declarations: [
@@ -10,7 +11,8 @@ import { RecorderModule } from './recorder/recorder.module';
   ],
   imports: [
     BrowserModule,
-    RecorderModule
+    AWRecorderModule
+    // SPNRecorderModule
   ],
   providers: [],
   bootstrap: [AppComponent]

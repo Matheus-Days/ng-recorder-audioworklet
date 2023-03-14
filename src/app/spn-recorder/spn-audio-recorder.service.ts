@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { cloneDeep } from 'lodash-es';
-import { Mp3Encoder, Mp3Object } from './Mp3Encoder';
+import { Mp3Encoder } from './Mp3Encoder';
 
 export type RecorderStatus =
   | 'IDLE'
@@ -28,7 +28,7 @@ const DEFAULT_CONSTRAINTS: MediaStreamConstraints = {
 }
 
 @Injectable()
-export class AudioRecorderService {
+export class SPNAudioRecorderService {
   // SERVICE RELATED PROPERTIES
   private _recorderStatus$ = new BehaviorSubject<RecorderStatus>('IDLE');
   private _audioUrl$ = new BehaviorSubject<string>('');
@@ -38,8 +38,9 @@ export class AudioRecorderService {
 
   // ENCODER RELATED PROPERTIES
   private mp3Encoder: Mp3Encoder | undefined;
-  private prevDataBuffer: any[] | undefined;
-  private _recording: Mp3Object | undefined;
+  private prevDataBuffer: Int8Array[] | undefined;
+  private _recording: Blob | undefined;
+  private _audioBuffer: Int8Array[] | undefined;
   
   // AUDIO CONTEXT RELATED PROPERTIES
   private context: AudioContext | undefined;
@@ -82,16 +83,14 @@ export class AudioRecorderService {
 
     if (!this.mp3Encoder) throw new Error('MP3 encoder not defined');
 
-    // Sets the internal (calculation aimed), duration to previous recording's public duration in order to resume the counting
+    // Sets the internal (calculation aimed) duration to previous recording's public duration in order to resume the counting
     this._duration = this.duration;
 
     // Saves current recoding's dataBuffer to resume it later
     this.prevDataBuffer = cloneDeep(this.mp3Encoder.dataBuffer);
 
     if (emitPreview) {
-      this._recording = this.mp3Encoder.finish();
-  
-      this.nextAudioUrl(this._recording.url);
+      this.createAudioUrl(this.mp3Encoder);
     }
 
     this._recorderStatus$.next('PAUSED');
@@ -104,9 +103,7 @@ export class AudioRecorderService {
 
     if (!this.mp3Encoder) throw new Error('MP3 encoder not defined');
 
-    this._recording = this.mp3Encoder.finish();
-
-    this.nextAudioUrl(this._recording.url);
+    this.createAudioUrl(this.mp3Encoder);
 
     this._recorderStatus$.next('STOPPED');
     this.clear({ keepRecording: true, keepState: true });
@@ -121,6 +118,14 @@ export class AudioRecorderService {
     this.input.disconnect();
     this.processor.disconnect();
     await this.context.close();
+  }
+
+  private createAudioUrl (mp3Encoder: Mp3Encoder) {
+    this._audioBuffer = mp3Encoder.finish();
+
+    this._recording = new Blob(this._audioBuffer, { type: "audio/mp3" });
+
+    this.nextAudioUrl(URL.createObjectURL(this._recording));
   }
 
   clear(opt?: ClearServiceOptions) {
@@ -185,7 +190,7 @@ export class AudioRecorderService {
     }, 1000);
   }
 
-  get audioUrl(): Observable<string> {
+  get audioUrl$(): Observable<string> {
     return this._audioUrl$.asObservable();
   }
 
@@ -197,7 +202,7 @@ export class AudioRecorderService {
     return this._currentTime$.asObservable();
   }
 
-  get recording(): Mp3Object | undefined {
+  get recording(): Blob | undefined {
     return this._recording;
   }
 }

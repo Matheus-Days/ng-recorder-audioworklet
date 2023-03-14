@@ -1,5 +1,5 @@
 <div class="recorder">
-  <div class="status">Gravador</div>
+  <div class="status">{{ recorderHeading }}</div>
   <span class="current-time" [class.red]="recorderStatus === 'RECORDING'">{{currentTime}}</span>
   <div class="buttons-container">
     <button *ngIf="recorderStatus === 'IDLE'" (click)="startRecording()">Gravar</button>
