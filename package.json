@@ -1,5 +1,5 @@
 {
-  "name": "ng-recorder",
+  "name": "poc-ngx-recorder",
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
